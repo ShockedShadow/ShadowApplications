@@ -59,12 +59,13 @@
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             text-shadow: 0 0 20px rgba(157, 0, 255, 0.5);
+            margin-bottom: 10px;
         }
 
         .container {
             width: 90%;
             max-width: 800px;
-            margin-top: 50px;
+            margin-top: 30px;
             display: grid;
             gap: 20px;
         }
@@ -102,7 +103,13 @@
             font-size: 0.9rem;
         }
 
-        .download-btn {
+        .btn-group {
+            display: flex;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .download-btn, .update-btn {
             background: transparent;
             border: 2px solid var(--accent-purple);
             color: white;
@@ -113,14 +120,74 @@
             font-size: 0.8rem;
             font-weight: bold;
             transition: 0.3s;
-            position: relative;
-            z-index: 1;
+            cursor: pointer;
         }
 
-        .download-btn:hover {
+        .download-btn:hover, .update-btn:hover {
             background: var(--accent-purple);
             box-shadow: 0 0 20px var(--accent-purple);
+        }
+
+        .update-btn {
+            border-color: var(--neon-pink);
+            color: #fff;
+        }
+
+        .update-btn:hover {
+            background: var(--neon-pink);
+            box-shadow: 0 0 20px var(--neon-pink);
+        }
+
+        /* MODAL STYLES */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 100;
+            left: 0; top: 0;
+            width: 100%; height: 100%;
+            background-color: rgba(0,0,0,0.8);
+            backdrop-filter: blur(5px);
+        }
+
+        .modal-content {
+            background: var(--bg-dark);
+            border: 1px solid var(--neon-pink);
+            margin: 10% auto;
+            padding: 30px;
+            width: 80%;
+            max-width: 500px;
+            border-radius: 15px;
+            box-shadow: 0 0 50px rgba(255, 0, 229, 0.3);
+            position: relative;
+        }
+
+        .close-modal {
+            position: absolute;
+            right: 20px;
+            top: 15px;
+            color: var(--neon-pink);
+            font-size: 28px;
+            font-weight: bold;
             cursor: pointer;
+        }
+
+        .changelog-list {
+            list-style: none;
+            padding: 0;
+            text-align: left;
+        }
+
+        .changelog-list li {
+            padding: 10px 0;
+            border-bottom: 1px solid var(--glass);
+            color: #d1d1d1;
+        }
+
+        .version-tag {
+            color: var(--neon-pink);
+            font-weight: bold;
+            font-family: 'Orbitron', sans-serif;
+            margin-right: 10px;
         }
 
         /* Scanline effect */
@@ -144,6 +211,10 @@
     <header>
         <h1>SHADOW APPLICATIONS</h1>
         <p>ALL OF MY PUBLIC TOOLS</p>
+        
+        <div class="btn-group">
+            <button class="update-btn" onclick="openModal()">UPDATES / CHANGELOG</button>
+        </div>
     </header>
 
     <div class="container">
@@ -155,6 +226,7 @@
             </div>
             <a href="https://github.com/ShockedShadow/ShadowApplications/blob/main/ShadowDownloaderSetup.exe" class="download-btn">DOWNLOAD</a>
         </div>
+
         <div class="file-card">
             <div class="file-info">
                 <h3>ShadowLauncherSetup</h3>
@@ -162,11 +234,43 @@
             </div>
             <a href="https://github.com/ShockedShadow/ShadowApplications/blob/main/ShadowLauncherSetup.exe" class="download-btn">DOWNLOAD</a>
         </div>
+
+    </div>
+
+    <div id="changelogModal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal" onclick="closeModal()">&times;</span>
+            <h2 style="font-family: 'Orbitron'; color: var(--neon-pink);">SYSTEM UPDATES</h2>
+            <ul class="changelog-list">
+                <li><span class="version-tag">V1.0</span> Initial public release of Shadow Suite.</li>
+                <li><span class="version-tag">V0.9</span> Beta testing phase completed.</li>
+                <li><span class="version-tag">PATCH</span> Fixed UI scaling on high-res monitors.</li>
+            </ul>
+        </div>
     </div>
 
     <footer style="margin: 50px; color: var(--border); font-size: 0.8rem;">
         &copy; 2024 TERMINAL_ACCESS // ENCRYPTED_STATION
     </footer>
+
+    <script>
+        const modal = document.getElementById("changelogModal");
+
+        function openModal() {
+            modal.style.display = "block";
+        }
+
+        function closeModal() {
+            modal.style.display = "none";
+        }
+
+        // Close modal if user clicks outside of the box
+        window.onclick = function(event) {
+            if (event.target == modal) {
+                closeModal();
+            }
+        }
+    </script>
 
 </body>
 </html>
