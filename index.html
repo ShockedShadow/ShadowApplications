@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Future Port | My Files</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Rajdhani:wght@300;500&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-dark: #0a0b1e;
+            --accent-purple: #9d00ff;
+            --neon-pink: #ff00e5;
+            --glass: rgba(255, 255, 255, 0.05);
+            --border: rgba(157, 0, 255, 0.3);
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: var(--bg-dark);
+            background-image: 
+                radial-gradient(circle at 20% 30%, rgba(157, 0, 255, 0.15) 0%, transparent 40%),
+                radial-gradient(circle at 80% 70%, rgba(255, 0, 229, 0.1) 0%, transparent 40%);
+            color: white;
+            font-family: 'Rajdhani', sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* Animated Background Grid */
+        body::before {
+            content: "";
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background-image: 
+                linear-gradient(var(--border) 1px, transparent 1px),
+                linear-gradient(90deg, var(--border) 1px, transparent 1px);
+            background-size: 50px 50px;
+            perspective: 1000px;
+            transform: rotateX(60deg) translateY(-20%);
+            z-index: -1;
+            opacity: 0.2;
+        }
+
+        header {
+            margin-top: 80px;
+            text-align: center;
+        }
+
+        h1 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 3rem;
+            letter-spacing: 5px;
+            text-transform: uppercase;
+            background: linear-gradient(to right, #fff, var(--accent-purple));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 0 20px rgba(157, 0, 255, 0.5);
+        }
+
+        .container {
+            width: 90%;
+            max-width: 800px;
+            margin-top: 50px;
+            display: grid;
+            gap: 20px;
+        }
+
+        .file-card {
+            background: var(--glass);
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--border);
+            border-radius: 15px;
+            padding: 25px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .file-card:hover {
+            border-color: var(--neon-pink);
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(255, 0, 229, 0.2);
+        }
+
+        .file-info h3 {
+            margin: 0;
+            font-family: 'Orbitron', sans-serif;
+            color: #fff;
+            font-size: 1.2rem;
+        }
+
+        .file-info p {
+            margin: 5px 0 0;
+            color: #b0b0b0;
+            font-size: 0.9rem;
+        }
+
+        .download-btn {
+            background: transparent;
+            border: 2px solid var(--accent-purple);
+            color: white;
+            padding: 12px 25px;
+            font-family: 'Orbitron', sans-serif;
+            text-decoration: none;
+            border-radius: 5px;
+            font-size: 0.8rem;
+            font-weight: bold;
+            transition: 0.3s;
+            position: relative;
+            z-index: 1;
+        }
+
+        .download-btn:hover {
+            background: var(--accent-purple);
+            box-shadow: 0 0 20px var(--accent-purple);
+            cursor: pointer;
+        }
+
+        /* Scanline effect */
+        .file-card::after {
+            content: "";
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 2px;
+            background: var(--neon-pink);
+            opacity: 0.2;
+            animation: scan 3s linear infinite;
+        }
+
+        @keyframes scan {
+            0% { top: 0; }
+            100% { top: 100%; }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>DATABANK_V.1</h1>
+        <p>SECURE FILE RETRIEVAL SYSTEM</p>
+    </header>
+
+    <div class="container">
+        
+        <div class="file-card">
+            <div class="file-info">
+                <h3>PROJECT_ALPHA.zip</h3>
+                <p>Version 2.4 | 15.2 MB</p>
+            </div>
+            <a href="PASTE_YOUR_LINK_HERE" class="download-btn">DOWNLOAD</a>
+        </div>
+        <div class="file-card">
+            <div class="file-info">
+                <h3>NEURAL_MAP.pdf</h3>
+                <p>System Specs | 2.1 MB</p>
+            </div>
+            <a href="PASTE_YOUR_LINK_HERE" class="download-btn">DOWNLOAD</a>
+        </div>
+
+        <div class="file-card">
+            <div class="file-info">
+                <h3>VOID_OS_BETA.iso</h3>
+                <p>Firmware | 4.2 GB</p>
+            </div>
+            <a href="PASTE_YOUR_LINK_HERE" class="download-btn">DOWNLOAD</a>
+        </div>
+
+    </div>
+
+    <footer style="margin: 50px; color: var(--border); font-size: 0.8rem;">
+        &copy; 2024 TERMINAL_ACCESS // ENCRYPTED_STATION
+    </footer>
+
+</body>
+</html>
