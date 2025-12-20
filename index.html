@@ -18,21 +18,24 @@
             margin: 0;
             padding: 0;
             background-color: var(--bg-dark);
-            background-image: 
-                radial-gradient(circle at 20% 30%, rgba(157, 0, 255, 0.15) 0%, transparent 40%),
-                radial-gradient(circle at 80% 70%, rgba(255, 0, 229, 0.1) 0%, transparent 40%);
             color: white;
             font-family: 'Rajdhani', sans-serif;
             display: flex;
             flex-direction: column;
             align-items: center;
             height: 100vh;
-            overflow: hidden; /* Prevents vertical body scroll */
+            overflow: hidden;
         }
 
-        /* Animated Background Grid */
-        body::before {
-            content: "";
+        /* Interactive Canvas Background */
+        #bgCanvas {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            z-index: -2;
+        }
+
+        /* Static Grid Overlay */
+        .grid-overlay {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
             background-image: 
@@ -42,28 +45,40 @@
             perspective: 1000px;
             transform: rotateX(60deg) translateY(-20%);
             z-index: -1;
-            opacity: 0.2;
+            opacity: 0.15;
+            pointer-events: none;
         }
 
         header {
             margin-top: 60px;
             text-align: center;
             flex-shrink: 0;
+            z-index: 10;
         }
 
+        /* --- ANIMATED TITLE --- */
         h1 {
             font-family: 'Orbitron', sans-serif;
             font-size: 2.5rem;
             letter-spacing: 5px;
             text-transform: uppercase;
-            background: linear-gradient(to right, #fff, var(--accent-purple));
+            background: linear-gradient(90deg, #fff, var(--accent-purple), var(--neon-pink), #fff);
+            background-size: 200% auto;
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
+            animation: shine 4s linear infinite, float 3s ease-in-out infinite;
             text-shadow: 0 0 20px rgba(157, 0, 255, 0.5);
             margin-bottom: 5px;
         }
 
-        /* --- THE SCROLLING CONTAINER --- */
+        @keyframes shine {
+            to { background-position: 200% center; }
+        }
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
         .scroll-wrapper {
             width: 100%;
             overflow-x: auto;
@@ -72,15 +87,10 @@
             display: flex;
             align-items: center;
             scroll-behavior: smooth;
+            z-index: 5;
         }
 
-        /* Custom Scrollbar */
-        .scroll-wrapper::-webkit-scrollbar {
-            height: 8px;
-        }
-        .scroll-wrapper::-webkit-scrollbar-track {
-            background: rgba(0, 0, 0, 0.2);
-        }
+        .scroll-wrapper::-webkit-scrollbar { height: 8px; }
         .scroll-wrapper::-webkit-scrollbar-thumb {
             background: var(--accent-purple);
             border-radius: 10px;
@@ -88,13 +98,13 @@
         }
 
         .container {
-            display: flex; /* Changed from Grid to Flex for horizontal scroll */
+            display: flex;
             gap: 30px;
-            padding: 0 10%; /* Padding on sides so first/last cards aren't touching edges */
+            padding: 0 10%;
         }
 
         .file-card {
-            min-width: 300px; /* Fixed width for cards */
+            min-width: 300px;
             background: var(--glass);
             backdrop-filter: blur(15px);
             border: 1px solid var(--border);
@@ -159,57 +169,6 @@
             transition: 0.3s;
         }
 
-        .update-btn:hover {
-            background: var(--neon-pink);
-            box-shadow: 0 0 20px var(--neon-pink);
-        }
-
-        /* MODAL STYLES */
-        .modal {
-            display: none;
-            position: fixed;
-            z-index: 100;
-            left: 0; top: 0;
-            width: 100%; height: 100%;
-            background-color: rgba(0,0,0,0.8);
-            backdrop-filter: blur(5px);
-        }
-
-        .modal-content {
-            background: var(--bg-dark);
-            border: 1px solid var(--neon-pink);
-            margin: 10% auto;
-            padding: 30px;
-            width: 80%;
-            max-width: 500px;
-            border-radius: 15px;
-            position: relative;
-        }
-
-        .close-modal {
-            position: absolute;
-            right: 20px;
-            top: 15px;
-            color: var(--neon-pink);
-            font-size: 28px;
-            cursor: pointer;
-        }
-
-        /* Scanline effect */
-        .file-card::after {
-            content: "";
-            position: absolute;
-            top: 0; left: 0; width: 100%; height: 2px;
-            background: var(--neon-pink);
-            opacity: 0.2;
-            animation: scan 3s linear infinite;
-        }
-
-        @keyframes scan {
-            0% { top: 0; }
-            100% { top: 100%; }
-        }
-
         footer {
             flex-shrink: 0;
             margin-bottom: 20px;
@@ -220,10 +179,13 @@
 </head>
 <body>
 
+    <canvas id="bgCanvas"></canvas>
+    <div class="grid-overlay"></div>
+
     <header>
         <h1>SHADOW APPLICATIONS</h1>
         <p>ALL OF MY PUBLIC TOOLS</p>
-        <button class="update-btn" onclick="openModal()" style="margin-top: 15px;">UPDATES / CHANGELOG</button>
+        <button class="update-btn" onclick="alert('Updates Log Established.')" style="margin-top: 15px;">UPDATES / CHANGELOG</button>
     </header>
 
     <div class="scroll-wrapper" id="scrollContainer">
@@ -277,36 +239,65 @@
         </div>
     </div>
 
-    <div id="changelogModal" class="modal">
-        <div class="modal-content">
-            <span class="close-modal" onclick="closeModal()">&times;</span>
-            <h2 style="font-family: 'Orbitron'; color: var(--neon-pink);">SYSTEM UPDATES</h2>
-            <ul style="list-style: none; padding: 0; color: #d1d1d1; text-align: left;">
-                <li style="margin-bottom: 10px;"><b style="color: var(--neon-pink);">V1.1:</b> Added ShadowConverter to the suite.</li>
-                <li style="margin-bottom: 10px;"><b style="color: var(--neon-pink);">V1.0:</b> Initial release with horizontal scroll UI.</li>
-            </ul>
-        </div>
-    </div>
-
     <footer>
         &copy; 2025 SHADOWS TECHNOLOGIES - DESKTOP APPLICATIONS
     </footer>
 
     <script>
-        const modal = document.getElementById("changelogModal");
+        const canvas = document.getElementById('bgCanvas');
+        const ctx = canvas.getContext('2d');
+        let particles = [];
+        const mouse = { x: null, y: null, radius: 150 };
+
+        window.addEventListener('mousemove', (e) => { mouse.x = e.x; mouse.y = e.y; });
+
+        function init() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+            particles = [];
+            for (let i = 0; i < 80; i++) {
+                particles.push({
+                    x: Math.random() * canvas.width,
+                    y: Math.random() * canvas.height,
+                    size: Math.random() * 2 + 1,
+                    speedX: (Math.random() - 0.5) * 0.5,
+                    speedY: (Math.random() - 0.5) * 0.5
+                });
+            }
+        }
+
+        function animate() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            particles.forEach(p => {
+                p.x += p.speedX; p.y += p.speedY;
+                if (p.x > canvas.width || p.x < 0) p.speedX *= -1;
+                if (p.y > canvas.height || p.y < 0) p.speedY *= -1;
+
+                ctx.fillStyle = 'rgba(157, 0, 255, 0.3)';
+                ctx.beginPath();
+                ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+                ctx.fill();
+
+                let dx = mouse.x - p.x;
+                let dy = mouse.y - p.y;
+                let distance = Math.sqrt(dx * dx + dy * dy);
+                if (distance < mouse.radius) {
+                    ctx.strokeStyle = `rgba(255, 0, 229, ${1 - distance/mouse.radius})`;
+                    ctx.lineWidth = 0.5;
+                    ctx.beginPath(); ctx.moveTo(p.x, p.y); ctx.lineTo(mouse.x, mouse.y); ctx.stroke();
+                }
+            });
+            requestAnimationFrame(animate);
+        }
+
+        init(); animate();
+        window.addEventListener('resize', init);
+
         const scrollContainer = document.getElementById("scrollContainer");
-
-        // Open/Close Modal
-        function openModal() { modal.style.display = "block"; }
-        function closeModal() { modal.style.display = "none"; }
-        window.onclick = (e) => { if (e.target == modal) closeModal(); }
-
-        // MOUSE WHEEL HORIZONTAL SCROLL
         scrollContainer.addEventListener("wheel", (evt) => {
             evt.preventDefault();
             scrollContainer.scrollLeft += evt.deltaY;
         });
     </script>
-
 </body>
 </html>
