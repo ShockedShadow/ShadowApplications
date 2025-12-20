@@ -15,26 +15,22 @@
         }
 
         body {
-            margin: 0;
-            padding: 0;
+            margin: 0; padding: 0;
             background-color: var(--bg-dark);
             color: white;
             font-family: 'Rajdhani', sans-serif;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            height: 100vh;
+            display: flex; flex-direction: column;
+            align-items: center; height: 100vh;
             overflow: hidden;
+            cursor: crosshair;
         }
 
-        /* Interactive Canvas Background */
         #bgCanvas {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
             z-index: -2;
         }
 
-        /* Static Grid Overlay */
         .grid-overlay {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
@@ -54,9 +50,9 @@
             text-align: center;
             flex-shrink: 0;
             z-index: 10;
+            pointer-events: none;
         }
 
-        /* --- ANIMATED TITLE --- */
         h1 {
             font-family: 'Orbitron', sans-serif;
             font-size: 2.5rem;
@@ -68,16 +64,10 @@
             -webkit-text-fill-color: transparent;
             animation: shine 4s linear infinite, float 3s ease-in-out infinite;
             text-shadow: 0 0 20px rgba(157, 0, 255, 0.5);
-            margin-bottom: 5px;
         }
 
-        @keyframes shine {
-            to { background-position: 200% center; }
-        }
-        @keyframes float {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-10px); }
-        }
+        @keyframes shine { to { background-position: 200% center; } }
+        @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
 
         .scroll-wrapper {
             width: 100%;
@@ -94,13 +84,13 @@
         .scroll-wrapper::-webkit-scrollbar-thumb {
             background: var(--accent-purple);
             border-radius: 10px;
-            box-shadow: 0 0 10px var(--accent-purple);
         }
 
         .container {
             display: flex;
             gap: 30px;
             padding: 0 10%;
+            perspective: 1000px; /* Essential for the 3D tilt */
         }
 
         .file-card {
@@ -113,30 +103,18 @@
             display: flex;
             flex-direction: column;
             justify-content: space-between;
-            transition: all 0.3s ease;
+            transition: transform 0.1s ease-out, box-shadow 0.3s ease;
             position: relative;
-            overflow: hidden;
+            transform-style: preserve-3d;
         }
 
         .file-card:hover {
             border-color: var(--neon-pink);
-            transform: translateY(-15px) scale(1.05);
             box-shadow: 0 15px 40px rgba(255, 0, 229, 0.3);
         }
 
-        .file-info h3 {
-            margin: 0;
-            font-family: 'Orbitron', sans-serif;
-            color: #fff;
-            font-size: 1.1rem;
-            min-height: 50px;
-        }
-
-        .file-info p {
-            margin: 10px 0;
-            color: #b0b0b0;
-            font-size: 0.9rem;
-        }
+        .file-info h3 { margin: 0; font-family: 'Orbitron', sans-serif; color: #fff; font-size: 1.1rem; min-height: 50px; pointer-events: none;}
+        .file-info p { margin: 10px 0; color: #b0b0b0; font-size: 0.9rem; pointer-events: none;}
 
         .download-btn {
             background: transparent;
@@ -151,12 +129,10 @@
             font-weight: bold;
             transition: 0.3s;
             margin-top: 20px;
+            transform: translateZ(20px); /* Makes button pop out in 3D */
         }
 
-        .download-btn:hover {
-            background: var(--accent-purple);
-            box-shadow: 0 0 20px var(--accent-purple);
-        }
+        .download-btn:hover { background: var(--accent-purple); box-shadow: 0 0 20px var(--accent-purple); }
 
         .update-btn {
             background: transparent;
@@ -167,14 +143,10 @@
             border-radius: 5px;
             cursor: pointer;
             transition: 0.3s;
+            pointer-events: auto;
         }
 
-        footer {
-            flex-shrink: 0;
-            margin-bottom: 20px;
-            color: var(--border);
-            font-size: 0.8rem;
-        }
+        footer { flex-shrink: 0; margin-bottom: 20px; color: var(--border); font-size: 0.8rem; pointer-events: none;}
     </style>
 </head>
 <body>
@@ -185,12 +157,11 @@
     <header>
         <h1>SHADOW APPLICATIONS</h1>
         <p>ALL OF MY PUBLIC TOOLS</p>
-        <button class="update-btn" onclick="alert('Updates Log Established.')" style="margin-top: 15px;">UPDATES / CHANGELOG</button>
+        <button class="update-btn" onclick="createPulse(window.innerWidth/2, window.innerHeight/2)" style="margin-top: 15px;">REFRESH NEURAL LINK</button>
     </header>
 
     <div class="scroll-wrapper" id="scrollContainer">
-        <div class="container">
-            
+        <div class="container" id="cardContainer">
             <div class="file-card">
                 <div class="file-info">
                     <h3>.NET Desktop Runtime</h3>
@@ -235,48 +206,74 @@
                 </div>
                 <a href="https://github.com/ShockedShadow/ShadowMIDIDownload/archive/refs/tags/Download.zip" class="download-btn">DOWNLOAD</a>
             </div>
-
         </div>
     </div>
 
-    <footer>
-        &copy; 2025 SHADOWS TECHNOLOGIES - DESKTOP APPLICATIONS
-    </footer>
+    <footer>&copy; 2025 SHADOWS TECHNOLOGIES - DESKTOP APPLICATIONS</footer>
 
     <script>
         const canvas = document.getElementById('bgCanvas');
         const ctx = canvas.getContext('2d');
         let particles = [];
-        const mouse = { x: null, y: null, radius: 150 };
+        const mouse = { x: null, y: null, radius: 180 };
 
-        window.addEventListener('mousemove', (e) => { mouse.x = e.x; mouse.y = e.y; });
+        window.addEventListener('mousemove', (e) => { mouse.x = e.x; mouse.y = e.y; updateCardTilt(e); });
+        window.addEventListener('mousedown', (e) => { createPulse(e.x, e.y); });
 
         function init() {
             canvas.width = window.innerWidth;
             canvas.height = window.innerHeight;
             particles = [];
-            for (let i = 0; i < 80; i++) {
+            for (let i = 0; i < 100; i++) {
                 particles.push({
                     x: Math.random() * canvas.width,
                     y: Math.random() * canvas.height,
-                    size: Math.random() * 2 + 1,
-                    speedX: (Math.random() - 0.5) * 0.5,
-                    speedY: (Math.random() - 0.5) * 0.5
+                    size: Math.random() * 2 + 0.5,
+                    speedX: (Math.random() - 0.5) * 1.5,
+                    speedY: (Math.random() - 0.5) * 1.5,
+                    originalSX: 0, originalSY: 0
                 });
             }
         }
 
+        function createPulse(x, y) {
+            particles.forEach(p => {
+                let dx = p.x - x;
+                let dy = p.y - y;
+                let dist = Math.sqrt(dx*dx + dy*dy);
+                if(dist < 300) {
+                    let force = (300 - dist) / 20;
+                    p.speedX += (dx / dist) * force;
+                    p.speedY += (dy / dist) * force;
+                }
+            });
+        }
+
+        function updateCardTilt(e) {
+            const cards = document.querySelectorAll('.file-card');
+            cards.forEach(card => {
+                const rect = card.getBoundingClientRect();
+                const cardX = rect.left + rect.width / 2;
+                const cardY = rect.top + rect.height / 2;
+                const angleX = (cardY - e.y) / 20;
+                const angleY = (e.x - cardX) / 20;
+                card.style.transform = `rotateX(${angleX}deg) rotateY(${angleY}deg)`;
+            });
+        }
+
         function animate() {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.fillStyle = 'rgba(10, 11, 30, 0.2)'; // Trail effect
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
             particles.forEach(p => {
                 p.x += p.speedX; p.y += p.speedY;
+                p.speedX *= 0.98; p.speedY *= 0.98; // Friction
+
                 if (p.x > canvas.width || p.x < 0) p.speedX *= -1;
                 if (p.y > canvas.height || p.y < 0) p.speedY *= -1;
 
-                ctx.fillStyle = 'rgba(157, 0, 255, 0.3)';
-                ctx.beginPath();
-                ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
-                ctx.fill();
+                ctx.fillStyle = 'rgba(157, 0, 255, 0.6)';
+                ctx.beginPath(); ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2); ctx.fill();
 
                 let dx = mouse.x - p.x;
                 let dy = mouse.y - p.y;
