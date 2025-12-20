@@ -26,8 +26,8 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            min-height: 100vh;
-            overflow-x: hidden;
+            height: 100vh;
+            overflow: hidden; /* Prevents vertical body scroll */
         }
 
         /* Animated Background Grid */
@@ -46,39 +46,63 @@
         }
 
         header {
-            margin-top: 80px;
+            margin-top: 60px;
             text-align: center;
+            flex-shrink: 0;
         }
 
         h1 {
             font-family: 'Orbitron', sans-serif;
-            font-size: 3rem;
+            font-size: 2.5rem;
             letter-spacing: 5px;
             text-transform: uppercase;
             background: linear-gradient(to right, #fff, var(--accent-purple));
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             text-shadow: 0 0 20px rgba(157, 0, 255, 0.5);
-            margin-bottom: 10px;
+            margin-bottom: 5px;
+        }
+
+        /* --- THE SCROLLING CONTAINER --- */
+        .scroll-wrapper {
+            width: 100%;
+            overflow-x: auto;
+            overflow-y: hidden;
+            padding: 50px 0;
+            display: flex;
+            align-items: center;
+            scroll-behavior: smooth;
+        }
+
+        /* Custom Scrollbar */
+        .scroll-wrapper::-webkit-scrollbar {
+            height: 8px;
+        }
+        .scroll-wrapper::-webkit-scrollbar-track {
+            background: rgba(0, 0, 0, 0.2);
+        }
+        .scroll-wrapper::-webkit-scrollbar-thumb {
+            background: var(--accent-purple);
+            border-radius: 10px;
+            box-shadow: 0 0 10px var(--accent-purple);
         }
 
         .container {
-            width: 90%;
-            max-width: 800px;
-            margin-top: 30px;
-            display: grid;
-            gap: 20px;
+            display: flex; /* Changed from Grid to Flex for horizontal scroll */
+            gap: 30px;
+            padding: 0 10%; /* Padding on sides so first/last cards aren't touching edges */
         }
 
         .file-card {
+            min-width: 300px; /* Fixed width for cards */
             background: var(--glass);
-            backdrop-filter: blur(10px);
+            backdrop-filter: blur(15px);
             border: 1px solid var(--border);
             border-radius: 15px;
             padding: 25px;
             display: flex;
+            flex-direction: column;
             justify-content: space-between;
-            align-items: center;
             transition: all 0.3s ease;
             position: relative;
             overflow: hidden;
@@ -86,51 +110,53 @@
 
         .file-card:hover {
             border-color: var(--neon-pink);
-            transform: translateY(-5px);
-            box-shadow: 0 10px 30px rgba(255, 0, 229, 0.2);
+            transform: translateY(-15px) scale(1.05);
+            box-shadow: 0 15px 40px rgba(255, 0, 229, 0.3);
         }
 
         .file-info h3 {
             margin: 0;
             font-family: 'Orbitron', sans-serif;
             color: #fff;
-            font-size: 1.2rem;
+            font-size: 1.1rem;
+            min-height: 50px;
         }
 
         .file-info p {
-            margin: 5px 0 0;
+            margin: 10px 0;
             color: #b0b0b0;
             font-size: 0.9rem;
         }
 
-        .btn-group {
-            display: flex;
-            gap: 15px;
-            margin-top: 20px;
-        }
-
-        .download-btn, .update-btn {
+        .download-btn {
             background: transparent;
             border: 2px solid var(--accent-purple);
             color: white;
-            padding: 12px 25px;
+            padding: 12px;
+            text-align: center;
             font-family: 'Orbitron', sans-serif;
             text-decoration: none;
             border-radius: 5px;
             font-size: 0.8rem;
             font-weight: bold;
             transition: 0.3s;
-            cursor: pointer;
+            margin-top: 20px;
         }
 
-        .download-btn:hover, .update-btn:hover {
+        .download-btn:hover {
             background: var(--accent-purple);
             box-shadow: 0 0 20px var(--accent-purple);
         }
 
         .update-btn {
-            border-color: var(--neon-pink);
-            color: #fff;
+            background: transparent;
+            border: 2px solid var(--neon-pink);
+            color: white;
+            padding: 10px 20px;
+            font-family: 'Orbitron', sans-serif;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: 0.3s;
         }
 
         .update-btn:hover {
@@ -157,7 +183,6 @@
             width: 80%;
             max-width: 500px;
             border-radius: 15px;
-            box-shadow: 0 0 50px rgba(255, 0, 229, 0.3);
             position: relative;
         }
 
@@ -167,27 +192,7 @@
             top: 15px;
             color: var(--neon-pink);
             font-size: 28px;
-            font-weight: bold;
             cursor: pointer;
-        }
-
-        .changelog-list {
-            list-style: none;
-            padding: 0;
-            text-align: left;
-        }
-
-        .changelog-list li {
-            padding: 10px 0;
-            border-bottom: 1px solid var(--glass);
-            color: #d1d1d1;
-        }
-
-        .version-tag {
-            color: var(--neon-pink);
-            font-weight: bold;
-            font-family: 'Orbitron', sans-serif;
-            margin-right: 10px;
         }
 
         /* Scanline effect */
@@ -204,6 +209,13 @@
             0% { top: 0; }
             100% { top: 100%; }
         }
+
+        footer {
+            flex-shrink: 0;
+            margin-bottom: 20px;
+            color: var(--border);
+            font-size: 0.8rem;
+        }
     </style>
 </head>
 <body>
@@ -211,85 +223,89 @@
     <header>
         <h1>SHADOW APPLICATIONS</h1>
         <p>ALL OF MY PUBLIC TOOLS</p>
-        
-        <div class="btn-group">
-            <button class="update-btn" onclick="openModal()">UPDATES / CHANGELOG</button>
-        </div>
+        <button class="update-btn" onclick="openModal()" style="margin-top: 15px;">UPDATES / CHANGELOG</button>
     </header>
 
-    <div class="container">
-        
-        <div class="file-card">
-            <div class="file-info">
-                <h3>.NET Desktop Runtime (NEEDED)</h3>
-                <p>Download To use apps</p>
-                <p>external</p>
+    <div class="scroll-wrapper" id="scrollContainer">
+        <div class="container">
+            
+            <div class="file-card">
+                <div class="file-info">
+                    <h3>.NET Desktop Runtime</h3>
+                    <p>Required to run all Shadow Suite applications.</p>
+                    <p style="color: var(--neon-pink);">[EXTERNAL DEPENDENCY]</p>
+                </div>
+                <a href="https://dotnet.microsoft.com/en-us/download/dotnet/thank-you/sdk-10.0.101-windows-x64-installer" class="download-btn">GET RUNTIME</a>
             </div>
-            <a href="https://dotnet.microsoft.com/en-us/download/dotnet/thank-you/sdk-10.0.101-windows-x64-installer" class="download-btn">DOWNLOAD</a>
-        </div>
 
-        <div class="file-card">
-            <div class="file-info">
-                <h3>ShadowWallpaper (SETUP)</h3>
-                <p>Download And Use Custom Wallpapers</p>
-                <p>Version 3 | 2 MB</p>
+            <div class="file-card">
+                <div class="file-info">
+                    <h3>ShadowConverter</h3>
+                    <p>Convert images to any format with moving aurora backgrounds.</p>
+                    <p>V1.0 | 3.5 MB</p>
+                </div>
+                <a href="#" class="download-btn">DOWNLOAD</a>
             </div>
-            <a href="https://github.com/ShockedShadow/ShadowWallpaperDownloadd/archive/refs/tags/Download.zip" class="download-btn">DOWNLOAD</a>
-        </div>
 
-        <div class="file-card">
-            <div class="file-info">
-                <h3>ShadowDownloader (SETUP)</h3>
-                <p>Download YouTube Videos (MP3, MP4)</p>
-                <p>Version 1 | 2.2 MB</p>
+            <div class="file-card">
+                <div class="file-info">
+                    <h3>ShadowWallpaper</h3>
+                    <p>Download and apply ultra-high-res custom wallpapers.</p>
+                    <p>V3.0 | 2.0 MB</p>
+                </div>
+                <a href="https://github.com/ShockedShadow/ShadowWallpaperDownloadd/archive/refs/tags/Download.zip" class="download-btn">DOWNLOAD</a>
             </div>
-            <a href="https://github.com/ShockedShadow/ShadowDownloader/archive/refs/tags/Downloader.zip" class="download-btn">DOWNLOAD</a>
-        </div>
 
+            <div class="file-card">
+                <div class="file-info">
+                    <h3>ShadowDownloader</h3>
+                    <p>High-speed YouTube video and audio extraction.</p>
+                    <p>V1.1 | 2.2 MB</p>
+                </div>
+                <a href="https://github.com/ShockedShadow/ShadowDownloader/archive/refs/tags/Downloader.zip" class="download-btn">DOWNLOAD</a>
+            </div>
 
             <div class="file-card">  
-            <div class="file-info">
-                <h3>(BETA) ShadowMIDI (SETUP)</h3>
-                <p>Version 1 | 2.4 MB</p>
+                <div class="file-info">
+                    <h3>(BETA) ShadowMIDI</h3>
+                    <p>Experimental MIDI visualizer and manipulator tool.</p>
+                    <p>V1.0-B | 2.4 MB</p>
+                </div>
+                <a href="https://github.com/ShockedShadow/ShadowMIDIDownload/archive/refs/tags/Download.zip" class="download-btn">DOWNLOAD</a>
             </div>
-            <a href="https://github.com/ShockedShadow/ShadowMIDIDownload/archive/refs/tags/Download.zip" class="download-btn">DOWNLOAD</a>
-        </div>
 
+        </div>
     </div>
 
     <div id="changelogModal" class="modal">
         <div class="modal-content">
             <span class="close-modal" onclick="closeModal()">&times;</span>
             <h2 style="font-family: 'Orbitron'; color: var(--neon-pink);">SYSTEM UPDATES</h2>
-            <ul class="changelog-list">
-                <li><span class="version-tag">V1.0</span> Initial public release of Shadow Suite.</li>
-                <li><span class="version-tag">V0.9</span> Beta testing phase completed.</li>
-                <li><span class="version-tag">PATCH</span> Fixed UI scaling on high-res monitors.</li>
+            <ul style="list-style: none; padding: 0; color: #d1d1d1; text-align: left;">
+                <li style="margin-bottom: 10px;"><b style="color: var(--neon-pink);">V1.1:</b> Added ShadowConverter to the suite.</li>
+                <li style="margin-bottom: 10px;"><b style="color: var(--neon-pink);">V1.0:</b> Initial release with horizontal scroll UI.</li>
             </ul>
         </div>
     </div>
 
-    <footer style="margin: 50px; color: var(--border); font-size: 0.8rem;">
+    <footer>
         &copy; 2025 SHADOWS TECHNOLOGIES - DESKTOP APPLICATIONS
     </footer>
 
     <script>
         const modal = document.getElementById("changelogModal");
+        const scrollContainer = document.getElementById("scrollContainer");
 
-        function openModal() {
-            modal.style.display = "block";
-        }
+        // Open/Close Modal
+        function openModal() { modal.style.display = "block"; }
+        function closeModal() { modal.style.display = "none"; }
+        window.onclick = (e) => { if (e.target == modal) closeModal(); }
 
-        function closeModal() {
-            modal.style.display = "none";
-        }
-
-        // Close modal if user clicks outside of the box
-        window.onclick = function(event) {
-            if (event.target == modal) {
-                closeModal();
-            }
-        }
+        // MOUSE WHEEL HORIZONTAL SCROLL
+        scrollContainer.addEventListener("wheel", (evt) => {
+            evt.preventDefault();
+            scrollContainer.scrollLeft += evt.deltaY;
+        });
     </script>
 
 </body>
